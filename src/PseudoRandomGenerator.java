@@ -1,3 +1,7 @@
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Arrays;
@@ -14,7 +18,7 @@ public class PseudoRandomGenerator {
 
     private static long[] nativeJavaGenerator(long[] statistics){
         for (int i = 0; i < statistics.length; i++){
-            statistics[i] = Math.abs(new SecureRandom().nextInt(256));
+            statistics[i] = Math.abs(new SecureRandom().nextInt());
         }
         return statistics;
     }
@@ -102,7 +106,7 @@ public class PseudoRandomGenerator {
 
         if (shift > 0) {
             System.arraycopy(a, a.length - shift, b, 0, shift);
-            System.arraycopy(a, 0, b, a.length - shift, a.length - shift);
+            System.arraycopy(a, 0, b, shift, a.length - shift);
         } else {
             shift = Math.abs(shift);
             System.arraycopy(a, shift, b, 0, a.length - shift);
@@ -115,12 +119,12 @@ public class PseudoRandomGenerator {
         long r = Math.abs(new Random().nextInt((int)Math.pow(2, 32)));
         for (int i = 0; i < statistics.length; i++) {
             statistics[i] = Math.abs(r % 2);
-            r = (shift(r, 1)) ^ (r | (shift(r, -1)));
+            r = (shift(r, -1)) ^ (r | (shift(r, 1)));
         }
         return  statistics;
     }
 
-    private static long[] librarymanGenerator(long[] statistics, StringBuilder text) {
+    private static long[] librarianGenerator(long[] statistics, StringBuilder text) {
         if (text.length() < statistics.length) {
             System.out.println("ERROR\n TEXT IS TOO SHORT");
             return null;
@@ -137,71 +141,167 @@ public class PseudoRandomGenerator {
         BigInteger a = new BigInteger("5B88C41246790891C095E2878880342E88C79974303BD0400B090FE38A688356", 16);
         BigInteger q = new BigInteger("675215CC3E227D3216C056CFA8F8822BB486F788641E85E0DE77097E1DB049F1", 16);
 
-        Long l = Math.abs(new Random().nextLong());
-        BigInteger t = new BigInteger(l.toString());
+        Random rand = new Random();
+        BigInteger t = new BigInteger(32, rand);
         for (int i = 0; i < statistics.length; i++) {
-            int compare = t.compareTo(q);
-            if (compare == -1) {
+            if (t.compareTo(q) == -1) {
                 statistics[i] = 1;
             } else {
                 statistics[i] = 0;
             }
             t = a.modPow(t, p);
-            System.out.println("===="+i);
         }
         return statistics;
     }
 
+    private static long[] bMByteGenerator(long[] statistics) {
+        BigInteger p = new BigInteger("CEA42B987C44FA642D80AD9F51F10457690DEF10C83D0BC1BCEE12FC3B6093E3", 16);
+        BigInteger a = new BigInteger("5B88C41246790891C095E2878880342E88C79974303BD0400B090FE38A688356", 16);
+        BigInteger s = (p.subtract(BigInteger.valueOf(1))).divide(BigInteger.valueOf(256));
 
+        Random rand = new Random();
+        BigInteger t = new BigInteger(32, rand);
 
-    public static void main(String[] args) {
+        for (int i = 0; i < statistics.length; i++) {
+            statistics[i] = t.divide(s).longValue();
+            t = a.modPow(t, p);
+        }
+        return statistics;
+    }
+
+    private static long[] bBSGenerator(long[] statistics) {
+        BigInteger p = new BigInteger("D5BBB96D30086EC484EBA3D7F9CAEB07", 16);
+        BigInteger q = new BigInteger("425D2B9BFDB25B9CF6C416CC6E37B59C1F", 16);
+        BigInteger n = p.multiply(q);
+
+        Random rand = new Random();
+        BigInteger r = new BigInteger(32, rand);
+
+        for (int i = 0; i < statistics.length; i++) {
+            r = r.modPow(BigInteger.valueOf(2), n);
+            statistics[i] = r.mod(BigInteger.valueOf(2)).longValue();
+        }
+        return statistics;
+    }
+
+    private static long[] bBSByteGenerator(long[] statistics) {
+        BigInteger p = new BigInteger("D5BBB96D30086EC484EBA3D7F9CAEB07", 16);
+        BigInteger q = new BigInteger("425D2B9BFDB25B9CF6C416CC6E37B59C1F", 16);
+        BigInteger n = p.multiply(q);
+
+        Random rand = new Random();
+        BigInteger r = new BigInteger(32, rand);
+
+        for (int i = 0; i < statistics.length; i++) {
+            r = r.modPow(BigInteger.valueOf(2), n);
+            statistics[i] = r.mod(BigInteger.valueOf(256)).longValue();
+        }
+        return statistics;
+    }
+
+    public static void main(String[] args) throws IOException {
         int count = 1000000;
+        String fileName = System.getProperty("user.dir")+"//src//ayvengo.txt";
+        StringBuilder text = new StringBuilder();
+        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), "windows-1251"));
+        try {
+            String s;
+
+            while ((s = in.readLine()) != null) {
+                text.append(s);
+                text.append("\n");
+            }
+        } finally {
+            in.close();
+        }
+
+        long startTime = System.currentTimeMillis();
         long[] nativeJavaGenerator = new long[count];
-        int i = 1;
         nativeJavaGenerator = nativeJavaGenerator(nativeJavaGenerator);
-        System.out.println(i++);
+        long endTime = System.currentTimeMillis();
+        System.out.println("nativeJavaGenerator = " + (endTime - startTime) + " milliseconds");
 //        System.out.println("nativeJavaGenerator = " + Arrays.toString(nativeJavaGenerator) + "\n");
 
+        startTime = System.currentTimeMillis();
         long[] lehmerLow = new long[count];
         lehmerLow = lehmerLowGenerator(Math.abs(new Random(5).nextInt() + 1), lehmerLow);
-        System.out.println(i++);
+        System.out.println("LehmerLow = " + (endTime - startTime) + " milliseconds");
 //        System.out.println("LehmerLow = " + Arrays.toString(lehmerLow) + "\n");
 
+        startTime = System.currentTimeMillis();
         long[] lehmerHigh = new long[count];
         lehmerHigh = lehmerHighGenerator(Math.abs(new Random(5).nextInt() + 1), lehmerHigh);
-        System.out.println(i++);
+        endTime = System.currentTimeMillis();
+        System.out.println("LehmerHigh = " + (endTime - startTime) + " milliseconds");
 //        System.out.println("LehmerHigh = " + Arrays.toString(lehmerHigh) + "\n");
 
+        startTime = System.currentTimeMillis();
         long[] l_20 = new long[count];
         l_20 = l_20Generator(l_20);
-        System.out.println(i++);
+        endTime = System.currentTimeMillis();
+        System.out.println("L20 = " + (endTime - startTime) + " milliseconds");
 //        System.out.println("L20 = " + Arrays.toString(l_20) + "\n");
 
+        startTime = System.currentTimeMillis();
         long[] l_89 = new long[count];
         l_89 = l_89Generator(l_89);
-        System.out.println(i++);
+        endTime = System.currentTimeMillis();
+        System.out.println("L89 = " + (endTime - startTime) + " milliseconds");
 //        System.out.println("L89 = " + Arrays.toString(l_89) + "\n");
 
+        startTime = System.currentTimeMillis();
         long[] jeffe = new long[count];
         jeffe = jeffeGenerator(jeffe);
-        System.out.println(i++);
+        endTime = System.currentTimeMillis();
+        System.out.println("Jeffe = " + (endTime - startTime) + " milliseconds");
 //        System.out.println("Jeffe = " + Arrays.toString(jeffe) + "\n");
 
+        startTime = System.currentTimeMillis();
         long[] wolfram = new long[count];
-//        wolfram = wolframGenerator(wolfram);
-        System.out.println(i++);
+        wolfram = wolframGenerator(wolfram);
+        endTime = System.currentTimeMillis();
+        System.out.println("Wolfram = " + (endTime - startTime) + " milliseconds");
 //        System.out.println("Wolfram = " + Arrays.toString(wolfram) + "\n");
 
+        startTime = System.currentTimeMillis();
+        long[] lib = new long[count];
+        lib = librarianGenerator(lib, text);
+        endTime = System.currentTimeMillis();
+        System.out.println("Librarian = " + (endTime - startTime) + " milliseconds");
+//        System.out.println("Librarian = " + Arrays.toString(lib) + "\n");
+
+        startTime = System.currentTimeMillis();
         long[] bM = new long[count];
         bM = bMGenerator(bM);
-        System.out.println(i++);
+        endTime = System.currentTimeMillis();
+        System.out.println("Blum-Micali = " + (endTime - startTime) + " milliseconds");
 //        System.out.println("Blum-Micali = " + Arrays.toString(bM) + "\n");
 
-        System.out.println(Long.toBinaryString(20));
+        startTime = System.currentTimeMillis();
+        long[] bMByte = new long[count];
+        bMByte = bMByteGenerator(bMByte);
+        endTime = System.currentTimeMillis();
+        System.out.println("Blum-Micali-Byte = " + (endTime - startTime) + " milliseconds");
+//        System.out.println("Blum-Micali-Byte = " + Arrays.toString(bMByte) + "\n");
+
+        startTime = System.currentTimeMillis();
+        long[] bBS = new long[count];
+        bBS = bBSGenerator(bBS);
+        endTime = System.currentTimeMillis();
+        System.out.println("Blum-Blum-Micali = " + (endTime - startTime) + " milliseconds");
+//        System.out.println("Blum-Blum-Micali = " + Arrays.toString(bBS) + "\n");
+
+        startTime = System.currentTimeMillis();
+        long[] bBSByte = new long[count];
+        bBSByte = bBSByteGenerator(bBSByte);
+        endTime = System.currentTimeMillis();
+        System.out.println("Blum-Blum-Micali-Byte = " + (endTime - startTime) + " milliseconds");
+//        System.out.println("Blum-Blum-Micali-Byte = " + Arrays.toString(bBSByte) + "\n");
+        /*System.out.println(Long.toBinaryString(20));
         System.out.println(Long.toBinaryString(Long.rotateLeft(20, 1)));
 
         long a = 200;
-        System.out.println(Long.toString(a, 2));
+        System.out.println(Long.toString(a, 2));*/
         /*System.out.println(toBinaryString(32));
         System.out.println(toBinaryString(32));
         Long l = 256L;
