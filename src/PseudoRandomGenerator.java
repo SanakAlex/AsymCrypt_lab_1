@@ -126,7 +126,7 @@ public class PseudoRandomGenerator {
 
     private static long[] librarianGenerator(long[] statistics, StringBuilder text) {
         if (text.length() < statistics.length) {
-            System.out.println("ERROR\n TEXT IS TOO SHORT");
+            System.out.println("ERROR\nTEXT IS TOO SHORT");
             return null;
         } else {
             for (int i = 0; i < statistics.length; i++) {
@@ -143,6 +143,7 @@ public class PseudoRandomGenerator {
 
         Random rand = new Random();
         BigInteger t = new BigInteger(32, rand);
+
         for (int i = 0; i < statistics.length; i++) {
             if (t.compareTo(q) == -1) {
                 statistics[i] = 1;
@@ -200,19 +201,16 @@ public class PseudoRandomGenerator {
     }
 
     public static void main(String[] args) throws IOException {
-        int count = 1000000;
+        int count = 100000;
         String fileName = System.getProperty("user.dir")+"//src//ayvengo.txt";
         StringBuilder text = new StringBuilder();
-        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), "windows-1251"));
-        try {
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), "windows-1251"))) {
             String s;
 
             while ((s = in.readLine()) != null) {
                 text.append(s);
                 text.append("\n");
             }
-        } finally {
-            in.close();
         }
 
         long startTime = System.currentTimeMillis();
@@ -288,15 +286,15 @@ public class PseudoRandomGenerator {
         long[] bBS = new long[count];
         bBS = bBSGenerator(bBS);
         endTime = System.currentTimeMillis();
-        System.out.println("Blum-Blum-Micali = " + (endTime - startTime) + " milliseconds");
-//        System.out.println("Blum-Blum-Micali = " + Arrays.toString(bBS) + "\n");
+        System.out.println("Blum-Blum-Shyb = " + (endTime - startTime) + " milliseconds");
+//        System.out.println("Blum-Blum-Shyb = " + Arrays.toString(bBS) + "\n");
 
         startTime = System.currentTimeMillis();
         long[] bBSByte = new long[count];
         bBSByte = bBSByteGenerator(bBSByte);
         endTime = System.currentTimeMillis();
-        System.out.println("Blum-Blum-Micali-Byte = " + (endTime - startTime) + " milliseconds");
-//        System.out.println("Blum-Blum-Micali-Byte = " + Arrays.toString(bBSByte) + "\n");
+        System.out.println("Blum-Blum-Shyb-Byte = " + (endTime - startTime) + " milliseconds");
+//        System.out.println("Blum-Blum-Shyb-Byte = " + Arrays.toString(bBSByte) + "\n");
         /*System.out.println(Long.toBinaryString(20));
         System.out.println(Long.toBinaryString(Long.rotateLeft(20, 1)));
 
