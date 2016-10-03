@@ -3,37 +3,43 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Random;
+
+//import static Test.*;
+
 
 /**
  * Created by Alex on 18.09.2016.
  */
 public class PseudoRandomGenerator {
-    private final static long m = (long)Math.pow(2, 32);
-    private final static long a = (long)Math.pow(2, 16) + 1;
+    private final static long m = (long) Math.pow(2, 32);
+    private final static long a = (long) Math.pow(2, 16) + 1;
     private final static long c = 119L;
-//    private final static long randomTime = 100;
 
-    private static long[] nativeJavaGenerator(long[] statistics){
-        for (int i = 0; i < statistics.length; i++){
-            statistics[i] = Math.abs(new SecureRandom().nextInt());
+    private static long[] nativeJavaGenerator(long[] statistics) throws NoSuchAlgorithmException {
+        byte[] bytes = new byte[statistics.length];
+        SecureRandom secureRandom = SecureRandom.getInstanceStrong();
+        secureRandom.nextBytes(bytes);
+        for (int i = 0; i < statistics.length; i++) {
+            statistics[i] = Math.abs(bytes[i]);
         }
         return statistics;
     }
 
-    private static long[] lehmerLowGenerator(long x, long[] statistics){
-        for (int i = 0; i < statistics.length; i++){
-            x = (a*x + c) % m;
+    private static long[] lehmerLowGenerator(long x, long[] statistics) {
+        for (int i = 0; i < statistics.length; i++) {
+            x = (a * x + c) % m;
             statistics[i] = x % 256;
         }
         return statistics;
     }
 
-    private static long[] lehmerHighGenerator(long x, long[] statistics){
-        for (int i = 0; i < statistics.length; i++){
-            x = (a*x + c) % m;
+    private static long[] lehmerHighGenerator(long x, long[] statistics) {
+        for (int i = 0; i < statistics.length; i++) {
+            x = (a * x + c) % m;
             statistics[i] = x >>> 24;
         }
         return statistics;
@@ -45,11 +51,19 @@ public class PseudoRandomGenerator {
         return array;
     }
 
-    private static long[] sequenceGenerator(long[] array){
+    private static long[] sequenceGenerator(long[] array) {
         for (int i = 0; i < array.length; i++) {
             array[i] = new Random().nextInt(2);
         }
         return array;
+    }
+
+    private static long[] bitToByteArray(long[] statistics) {
+        long[] longs = new long[statistics.length / 8];
+        for (int i = 0; i < statistics.length / 8; i++) {
+            longs[i] = (128 * statistics[i * 8] + 64 * statistics[i * 8 + 1] + 32 * statistics[i * 8 + 2] + 16 * statistics[i * 8 + 3] + 8 * statistics[i * 8 + 4] + 4 * statistics[i * 8 + 5] + 2 * statistics[i * 8 + 6] + statistics[i * 8 + 7]);
+        }
+        return longs;
     }
 
     private static long[] l_20Generator(long[] statistics) {
@@ -61,7 +75,7 @@ public class PseudoRandomGenerator {
             statistics[i] = x;
             elementsOfL20 = arrayShift(elementsOfL20, x);
         }
-        return statistics;
+        return bitToByteArray(statistics);
     }
 
     private static long[] l_89Generator(long[] statistics) {
@@ -73,7 +87,7 @@ public class PseudoRandomGenerator {
             statistics[i] = x;
             elementsOfL89 = arrayShift(elementsOfL89, x);
         }
-        return statistics;
+        return bitToByteArray(statistics);
     }
 
     private static long[] jeffeGenerator(long[] statistics) {
@@ -96,7 +110,7 @@ public class PseudoRandomGenerator {
             l_9 = arrayShift(l_9, y);
             l_10 = arrayShift(l_10, s);
         }
-        return statistics;
+        return bitToByteArray(statistics);
     }
 
     private static long shift(long l, int shift) {
@@ -105,7 +119,7 @@ public class PseudoRandomGenerator {
         char[] b = new char[a.length];
 
         if (shift > 0) {
-            System.arraycopy(a, a.length - shift, b, 0, shift);
+            System.arraycopy(a, a.length - shift - 1, b, 0, shift);
             System.arraycopy(a, 0, b, shift, a.length - shift);
         } else {
             shift = Math.abs(shift);
@@ -116,12 +130,12 @@ public class PseudoRandomGenerator {
     }
 
     private static long[] wolframGenerator(long[] statistics) {
-        long r = Math.abs(new Random().nextInt((int)Math.pow(2, 32)));
+        long r = Math.abs(new SecureRandom().nextInt()) + 1;
         for (int i = 0; i < statistics.length; i++) {
-            statistics[i] = Math.abs(r % 2);
+            statistics[i] = r % 2;
             r = (shift(r, -1)) ^ (r | (shift(r, 1)));
         }
-        return  statistics;
+        return bitToByteArray(statistics);
     }
 
     private static long[] librarianGenerator(long[] statistics, StringBuilder text) {
@@ -129,8 +143,9 @@ public class PseudoRandomGenerator {
             System.out.println("ERROR\nTEXT IS TOO SHORT");
             return null;
         } else {
+            byte[] bytes = text.toString().getBytes();
             for (int i = 0; i < statistics.length; i++) {
-                statistics[i] = text.charAt(i) % 256;
+                statistics[i] = bytes[i] & 0xFF;
             }
             return statistics;
         }
@@ -152,7 +167,7 @@ public class PseudoRandomGenerator {
             }
             t = a.modPow(t, p);
         }
-        return statistics;
+        return bitToByteArray(statistics);
     }
 
     private static long[] bMByteGenerator(long[] statistics) {
@@ -182,7 +197,7 @@ public class PseudoRandomGenerator {
             r = r.modPow(BigInteger.valueOf(2), n);
             statistics[i] = r.mod(BigInteger.valueOf(2)).longValue();
         }
-        return statistics;
+        return bitToByteArray(statistics);
     }
 
     private static long[] bBSByteGenerator(long[] statistics) {
@@ -200,9 +215,9 @@ public class PseudoRandomGenerator {
         return statistics;
     }
 
-    public static void main(String[] args) throws IOException {
-        int count = 100000;
-        String fileName = System.getProperty("user.dir")+"//src//ayvengo.txt";
+    public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
+        int count = 1000;
+        String fileName = System.getProperty("user.dir") + "//src//ayvengo.txt";
         StringBuilder text = new StringBuilder();
         try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), "windows-1251"))) {
             String s;
@@ -214,15 +229,29 @@ public class PseudoRandomGenerator {
         }
 
         long startTime = System.currentTimeMillis();
+        System.out.println("nativeJavaGenerator");
         long[] nativeJavaGenerator = new long[count];
         nativeJavaGenerator = nativeJavaGenerator(nativeJavaGenerator);
+        boolean status[] = Test.allTests(nativeJavaGenerator, 5, Test.z001);
+        System.out.println("---0.01\nfirst test: " + status[0] + ";  second test: " + status[1] + ";  third test: " + status[2]);
+        status = Test.allTests(nativeJavaGenerator, 5, Test.z005);
+        System.out.println("---0.05\nfirst test: " + status[0] + ";  second test: " + status[1] + ";  third test: " + status[2]);
+        status = Test.allTests(nativeJavaGenerator, 5, Test.z01);
+        System.out.println("---0.1\nfirst test: " + status[0] + ";  second test: " + status[1] + ";  third test: " + status[2]);
         long endTime = System.currentTimeMillis();
-        System.out.println("nativeJavaGenerator = " + (endTime - startTime) + " milliseconds");
+        System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
 //        System.out.println("nativeJavaGenerator = " + Arrays.toString(nativeJavaGenerator) + "\n");
 
         startTime = System.currentTimeMillis();
+        System.out.println("LehmerLow");
         long[] lehmerLow = new long[count];
         lehmerLow = lehmerLowGenerator(Math.abs(new Random(5).nextInt() + 1), lehmerLow);
+        status = Test.allTests(nativeJavaGenerator, 5, Test.z001);
+        System.out.println("---0.01\nfirst test: " + status[0] + ";  second test: " + status[1] + ";  third test: " + status[2]);
+        status = Test.allTests(nativeJavaGenerator, 5, Test.z005);
+        System.out.println("---0.05\nfirst test: " + status[0] + ";  second test: " + status[1] + ";  third test: " + status[2]);
+        status = Test.allTests(nativeJavaGenerator, 5, Test.z01);
+        System.out.println("---0.1\nfirst test: " + status[0] + ";  second test: " + status[1] + ";  third test: " + status[2]);
         System.out.println("LehmerLow = " + (endTime - startTime) + " milliseconds");
 //        System.out.println("LehmerLow = " + Arrays.toString(lehmerLow) + "\n");
 
@@ -295,24 +324,6 @@ public class PseudoRandomGenerator {
         endTime = System.currentTimeMillis();
         System.out.println("Blum-Blum-Shyb-Byte = " + (endTime - startTime) + " milliseconds");
 //        System.out.println("Blum-Blum-Shyb-Byte = " + Arrays.toString(bBSByte) + "\n");
-        /*System.out.println(Long.toBinaryString(20));
-        System.out.println(Long.toBinaryString(Long.rotateLeft(20, 1)));
 
-        long a = 200;
-        System.out.println(Long.toString(a, 2));*/
-        /*System.out.println(toBinaryString(32));
-        System.out.println(toBinaryString(32));
-        Long l = 256L;
-        System.out.println(toBinaryString(l)+"  "+l+"    "+toBinaryString(l).length());
-        l = (l % 256);
-        System.out.println(toBinaryString(l)+"  "+l);
-
-        System.out.println();
-
-        System.out.println();*/
-
-//        long[] array = new long[] {5, 6, 7, 8, 10, 5050};
-//        array = arrayShift(array, 10);
-//        System.out.println(Arrays.toString(array));
     }
 }
