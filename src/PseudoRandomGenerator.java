@@ -299,24 +299,24 @@ public class PseudoRandomGenerator {
         System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
 //        System.out.println("Librarian = " + Arrays.toString(lib) + "\n");
 
-//        startTime = System.currentTimeMillis();
-//        System.out.println("--------Blum-Micali");
-//        long[] bM = new long[count];
-//        bM = bMGenerator(bM);
-//        Test.completeTests(bM, 5);
-//        endTime = System.currentTimeMillis();
-//        System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
-////        System.out.println("Blum-Micali = " + Arrays.toString(bM) + "\n");
-//
-//        startTime = System.currentTimeMillis();
-//        System.out.println("--------Blum-Micali-Byte");
-//        long[] bMByte = new long[count];
-//        bMByte = bMByteGenerator(bMByte);
-//        Test.completeTests(bMByte, 5);
-//        endTime = System.currentTimeMillis();
-//        System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
-////        System.out.println("Blum-Micali-Byte = " + Arrays.toString(bMByte) + "\n");
-//
+        startTime = System.currentTimeMillis();
+        System.out.println("--------Blum-Micali");
+        long[] bM = new long[count];
+        bM = bMGenerator(bM);
+        Test.completeTests(bM, 5);
+        endTime = System.currentTimeMillis();
+        System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
+//        System.out.println("Blum-Micali = " + Arrays.toString(bM) + "\n");
+
+        startTime = System.currentTimeMillis();
+        System.out.println("--------Blum-Micali-Byte");
+        long[] bMByte = new long[count];
+        bMByte = bMByteGenerator(bMByte);
+        Test.completeTests(bMByte, 5);
+        endTime = System.currentTimeMillis();
+        System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
+//        System.out.println("Blum-Micali-Byte = " + Arrays.toString(bMByte) + "\n");
+
         startTime = System.currentTimeMillis();
         System.out.println("--------Blum-Blum-Shyb");
         long[] bBS = new long[count];

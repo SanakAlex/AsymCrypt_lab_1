@@ -26,6 +26,7 @@ class Test {
             double v = (double) map.get(l);
             x += (v - n)*(v - n) / n;
         }
+//        System.out.println("    Test 1\n    practice X: " + x + "; border X: " + getXBoundary(255, z));
         return x <= getXBoundary(255, z);
     }
 
@@ -60,6 +61,7 @@ class Test {
             x += Math.pow(vPairQuantity, 2) / (vIQuantity * vJQuantity);
         }
         x = n * (x - 1);
+//        System.out.println("    Test 2\n    practice X: " + x + "; border X: " + getXBoundary(255 * 255, z));
         return x <= getXBoundary(255 * 255, z);
     }
 
@@ -99,6 +101,7 @@ class Test {
             }
         }
         x = n * (x - 1);
+//        System.out.println("    Test 3\n    practice X: " + x + "; border X: " + getXBoundary(255 * (r - 1), z));
         return x <= getXBoundary(255 * (r - 1), z);
     }
 
