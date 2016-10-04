@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -5,16 +6,13 @@ import java.util.Map;
  * Created by Alex on 03.10.2016.
  */
 class Test {
-    public static double z001 = 2.3263478740408408;
-    public static double z005 = 1.6448536269514722;
-    public static double z01 = 1.2815515655446004;
 
     private static double getXBoundary (long l, double z) {
-        return Math.sqrt(2 * l) * z + l;
+        return (Math.sqrt(2 * l)) * z + l;
     }
 
     private static boolean equalProbabilityTest(long[] statistics, double z) {
-        double n = statistics.length / 256;
+        double n = (double)statistics.length / 256;
         Map<Long, Integer> map = new HashMap<>();
         for (long element : statistics) {
             if (map.containsKey(element)) {
@@ -25,8 +23,8 @@ class Test {
         }
         double x = 0;
         for (Long l : map.keySet()) {
-            double v = map.get(l) / 256;
-            x += Math.pow((v + n), 2) / n;
+            double v = (double) map.get(l);
+            x += (v - n)*(v - n) / n;
         }
         return x <= getXBoundary(255, z);
     }
@@ -36,19 +34,17 @@ class Test {
         Map<Long, Integer> firstElementMap = new HashMap<>();
         Map<Long, Integer> secondElementMap = new HashMap<>();
         for (int i = 0; i < statistics.length / 2; i++) {
-            Long[] element = new Long[] {statistics[i * 2], statistics[i * 2 + 1]};
+            Long[] element = {statistics[i * 2], statistics[i * 2 + 1]};
             if (pairMap.containsKey(element)) {
                 pairMap.put(element, pairMap.get(element) + 1);
             } else {
                 pairMap.put(element, 1);
             }
-
             if (firstElementMap.containsKey(statistics[i * 2])) {
                 firstElementMap.put(statistics[i * 2], firstElementMap.get(statistics[i * 2]) + 1);
             } else {
                 firstElementMap.put(statistics[i * 2], 1);
             }
-
             if (secondElementMap.containsKey(statistics[i * 2 + 1])) {
                 secondElementMap.put(statistics[i * 2 + 1], secondElementMap.get(statistics[i * 2 + 1]) + 1);
             } else {
@@ -57,14 +53,11 @@ class Test {
         }
         int n = statistics.length / 2;
         double x = 0;
-        for (Long vI : firstElementMap.keySet()) {
-            int vIQuantity = firstElementMap.get(vI);
-            for (Long vJ : secondElementMap.keySet()) {
-                int vJQuantity = secondElementMap.get(vJ);
-                Long[] element = new Long[] {vI, vJ};
-                int vPairQuantity = pairMap.get(element);
-                x += Math.pow(vPairQuantity, 2) / (vIQuantity * vJQuantity);
-            }
+        for (Long[] pair : pairMap.keySet()) {
+            int vIQuantity = firstElementMap.get(pair[0]);
+            int vJQuantity = secondElementMap.get(pair[1]);
+            int vPairQuantity = pairMap.get(pair);
+            x += Math.pow(vPairQuantity, 2) / (vIQuantity * vJQuantity);
         }
         x = n * (x - 1);
         return x <= getXBoundary(255 * 255, z);
@@ -86,6 +79,7 @@ class Test {
 
         }
         for (int i = 0; i < r; i++) {
+            sequenceMap[i] = new HashMap<>();
             for (int j = 0; j < mLength; j++) {
                 if (sequenceMap[i].containsKey(statistics[i * mLength + j])) {
                     sequenceMap[i].put(statistics[i * mLength + j], (sequenceMap[i]).get(statistics[i * mLength + j]) + 1);
@@ -108,9 +102,21 @@ class Test {
         return x <= getXBoundary(255 * (r - 1), z);
     }
 
-    public static boolean[] allTests (long[] statistics, int r, double z) {
+    private static boolean[] allTests(long[] statistics, int r, double z) {
         return new boolean[] {equalProbabilityTest(statistics, z), elementIndependenceTest(statistics, z),
         sequenceHomogeneityTest(statistics, r, z)};
+    }
+
+    static void completeTests(long[] statistics, int r){
+        double z001 = 2.3263478740408408;
+        boolean status[] = allTests(statistics, r, z001);
+        System.out.println("---0.01\nfirst test: " + status[0] + ";  second test: " + status[1] + ";  third test: " + status[2]);
+        double z005 = 1.6448536269514722;
+        status = allTests(statistics, r, z005);
+        System.out.println("---0.05\nfirst test: " + status[0] + ";  second test: " + status[1] + ";  third test: " + status[2]);
+        double z01 = 1.2815515655446004;
+        status = allTests(statistics, r, z01);
+        System.out.println("---0.1\nfirst test: " + status[0] + ";  second test: " + status[1] + ";  third test: " + status[2]);
     }
 
     public static void main(String[] args) {

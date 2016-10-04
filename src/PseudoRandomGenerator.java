@@ -24,7 +24,7 @@ public class PseudoRandomGenerator {
         SecureRandom secureRandom = SecureRandom.getInstanceStrong();
         secureRandom.nextBytes(bytes);
         for (int i = 0; i < statistics.length; i++) {
-            statistics[i] = Math.abs(bytes[i]);
+            statistics[i] = bytes[i] & 0xFF;
         }
         return statistics;
     }
@@ -216,7 +216,7 @@ public class PseudoRandomGenerator {
     }
 
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
-        int count = 1000;
+        int count = 1000000;
         String fileName = System.getProperty("user.dir") + "//src//ayvengo.txt";
         StringBuilder text = new StringBuilder();
         try (BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(fileName), "windows-1251"))) {
@@ -229,100 +229,110 @@ public class PseudoRandomGenerator {
         }
 
         long startTime = System.currentTimeMillis();
-        System.out.println("nativeJavaGenerator");
+        System.out.println("--------nativeJavaGenerator");
         long[] nativeJavaGenerator = new long[count];
         nativeJavaGenerator = nativeJavaGenerator(nativeJavaGenerator);
-        boolean status[] = Test.allTests(nativeJavaGenerator, 5, Test.z001);
-        System.out.println("---0.01\nfirst test: " + status[0] + ";  second test: " + status[1] + ";  third test: " + status[2]);
-        status = Test.allTests(nativeJavaGenerator, 5, Test.z005);
-        System.out.println("---0.05\nfirst test: " + status[0] + ";  second test: " + status[1] + ";  third test: " + status[2]);
-        status = Test.allTests(nativeJavaGenerator, 5, Test.z01);
-        System.out.println("---0.1\nfirst test: " + status[0] + ";  second test: " + status[1] + ";  third test: " + status[2]);
+        Test.completeTests(nativeJavaGenerator, 5);
         long endTime = System.currentTimeMillis();
         System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
 //        System.out.println("nativeJavaGenerator = " + Arrays.toString(nativeJavaGenerator) + "\n");
 
         startTime = System.currentTimeMillis();
-        System.out.println("LehmerLow");
+        System.out.println("--------LehmerLow");
         long[] lehmerLow = new long[count];
         lehmerLow = lehmerLowGenerator(Math.abs(new Random(5).nextInt() + 1), lehmerLow);
-        status = Test.allTests(nativeJavaGenerator, 5, Test.z001);
-        System.out.println("---0.01\nfirst test: " + status[0] + ";  second test: " + status[1] + ";  third test: " + status[2]);
-        status = Test.allTests(nativeJavaGenerator, 5, Test.z005);
-        System.out.println("---0.05\nfirst test: " + status[0] + ";  second test: " + status[1] + ";  third test: " + status[2]);
-        status = Test.allTests(nativeJavaGenerator, 5, Test.z01);
-        System.out.println("---0.1\nfirst test: " + status[0] + ";  second test: " + status[1] + ";  third test: " + status[2]);
-        System.out.println("LehmerLow = " + (endTime - startTime) + " milliseconds");
+        Test.completeTests(lehmerLow, 5);
+        System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
 //        System.out.println("LehmerLow = " + Arrays.toString(lehmerLow) + "\n");
 
         startTime = System.currentTimeMillis();
+        System.out.println("--------LehmerHigh");
         long[] lehmerHigh = new long[count];
         lehmerHigh = lehmerHighGenerator(Math.abs(new Random(5).nextInt() + 1), lehmerHigh);
+        Test.completeTests(lehmerHigh, 5);
         endTime = System.currentTimeMillis();
-        System.out.println("LehmerHigh = " + (endTime - startTime) + " milliseconds");
+        System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
 //        System.out.println("LehmerHigh = " + Arrays.toString(lehmerHigh) + "\n");
 
         startTime = System.currentTimeMillis();
+        System.out.println("--------L20");
         long[] l_20 = new long[count];
         l_20 = l_20Generator(l_20);
+        Test.completeTests(l_20, 5);
         endTime = System.currentTimeMillis();
-        System.out.println("L20 = " + (endTime - startTime) + " milliseconds");
+        System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
 //        System.out.println("L20 = " + Arrays.toString(l_20) + "\n");
 
         startTime = System.currentTimeMillis();
+        System.out.println("--------L89");
         long[] l_89 = new long[count];
         l_89 = l_89Generator(l_89);
+        Test.completeTests(l_89, 5);
         endTime = System.currentTimeMillis();
-        System.out.println("L89 = " + (endTime - startTime) + " milliseconds");
+        System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
 //        System.out.println("L89 = " + Arrays.toString(l_89) + "\n");
 
         startTime = System.currentTimeMillis();
+        System.out.println("--------Jeffe");
         long[] jeffe = new long[count];
         jeffe = jeffeGenerator(jeffe);
+        Test.completeTests(jeffe, 5);
         endTime = System.currentTimeMillis();
-        System.out.println("Jeffe = " + (endTime - startTime) + " milliseconds");
+        System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
 //        System.out.println("Jeffe = " + Arrays.toString(jeffe) + "\n");
 
         startTime = System.currentTimeMillis();
+        System.out.println("--------Wolfram");
         long[] wolfram = new long[count];
         wolfram = wolframGenerator(wolfram);
+        Test.completeTests(wolfram, 5);
         endTime = System.currentTimeMillis();
-        System.out.println("Wolfram = " + (endTime - startTime) + " milliseconds");
+        System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
 //        System.out.println("Wolfram = " + Arrays.toString(wolfram) + "\n");
 
         startTime = System.currentTimeMillis();
+        System.out.println("--------Librarian");
         long[] lib = new long[count];
         lib = librarianGenerator(lib, text);
+        Test.completeTests(lib, 5);
         endTime = System.currentTimeMillis();
-        System.out.println("Librarian = " + (endTime - startTime) + " milliseconds");
+        System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
 //        System.out.println("Librarian = " + Arrays.toString(lib) + "\n");
 
+//        startTime = System.currentTimeMillis();
+//        System.out.println("--------Blum-Micali");
+//        long[] bM = new long[count];
+//        bM = bMGenerator(bM);
+//        Test.completeTests(bM, 5);
+//        endTime = System.currentTimeMillis();
+//        System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
+////        System.out.println("Blum-Micali = " + Arrays.toString(bM) + "\n");
+//
+//        startTime = System.currentTimeMillis();
+//        System.out.println("--------Blum-Micali-Byte");
+//        long[] bMByte = new long[count];
+//        bMByte = bMByteGenerator(bMByte);
+//        Test.completeTests(bMByte, 5);
+//        endTime = System.currentTimeMillis();
+//        System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
+////        System.out.println("Blum-Micali-Byte = " + Arrays.toString(bMByte) + "\n");
+//
         startTime = System.currentTimeMillis();
-        long[] bM = new long[count];
-        bM = bMGenerator(bM);
-        endTime = System.currentTimeMillis();
-        System.out.println("Blum-Micali = " + (endTime - startTime) + " milliseconds");
-//        System.out.println("Blum-Micali = " + Arrays.toString(bM) + "\n");
-
-        startTime = System.currentTimeMillis();
-        long[] bMByte = new long[count];
-        bMByte = bMByteGenerator(bMByte);
-        endTime = System.currentTimeMillis();
-        System.out.println("Blum-Micali-Byte = " + (endTime - startTime) + " milliseconds");
-//        System.out.println("Blum-Micali-Byte = " + Arrays.toString(bMByte) + "\n");
-
-        startTime = System.currentTimeMillis();
+        System.out.println("--------Blum-Blum-Shyb");
         long[] bBS = new long[count];
         bBS = bBSGenerator(bBS);
+        Test.completeTests(bBS, 5);
         endTime = System.currentTimeMillis();
-        System.out.println("Blum-Blum-Shyb = " + (endTime - startTime) + " milliseconds");
+        System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
 //        System.out.println("Blum-Blum-Shyb = " + Arrays.toString(bBS) + "\n");
 
         startTime = System.currentTimeMillis();
+        System.out.println("--------Blum-Blum-Shyb-Byte");
         long[] bBSByte = new long[count];
         bBSByte = bBSByteGenerator(bBSByte);
+        Test.completeTests(bBSByte, 5);
         endTime = System.currentTimeMillis();
-        System.out.println("Blum-Blum-Shyb-Byte = " + (endTime - startTime) + " milliseconds");
+        System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
 //        System.out.println("Blum-Blum-Shyb-Byte = " + Arrays.toString(bBSByte) + "\n");
 
     }
