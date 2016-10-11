@@ -232,7 +232,7 @@ public class PseudoRandomGenerator {
         System.out.println("--------nativeJavaGenerator");
         long[] nativeJavaGenerator = new long[count];
         nativeJavaGenerator = nativeJavaGenerator(nativeJavaGenerator);
-        Test.completeTests(nativeJavaGenerator, 5);
+        Test.completeTests(nativeJavaGenerator, 20);
         long endTime = System.currentTimeMillis();
         System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
 //        System.out.println("nativeJavaGenerator = " + Arrays.toString(nativeJavaGenerator) + "\n");
@@ -241,7 +241,7 @@ public class PseudoRandomGenerator {
         System.out.println("--------LehmerLow");
         long[] lehmerLow = new long[count];
         lehmerLow = lehmerLowGenerator(Math.abs(new Random(5).nextInt() + 1), lehmerLow);
-        Test.completeTests(lehmerLow, 5);
+        Test.completeTests(lehmerLow, 20);
         System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
 //        System.out.println("LehmerLow = " + Arrays.toString(lehmerLow) + "\n");
 
@@ -249,7 +249,7 @@ public class PseudoRandomGenerator {
         System.out.println("--------LehmerHigh");
         long[] lehmerHigh = new long[count];
         lehmerHigh = lehmerHighGenerator(Math.abs(new Random(5).nextInt() + 1), lehmerHigh);
-        Test.completeTests(lehmerHigh, 5);
+        Test.completeTests(lehmerHigh, 20);
         endTime = System.currentTimeMillis();
         System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
 //        System.out.println("LehmerHigh = " + Arrays.toString(lehmerHigh) + "\n");
@@ -258,7 +258,7 @@ public class PseudoRandomGenerator {
         System.out.println("--------L20");
         long[] l_20 = new long[count];
         l_20 = l_20Generator(l_20);
-        Test.completeTests(l_20, 5);
+        Test.completeTests(l_20, 20);
         endTime = System.currentTimeMillis();
         System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
 //        System.out.println("L20 = " + Arrays.toString(l_20) + "\n");
@@ -267,7 +267,7 @@ public class PseudoRandomGenerator {
         System.out.println("--------L89");
         long[] l_89 = new long[count];
         l_89 = l_89Generator(l_89);
-        Test.completeTests(l_89, 5);
+        Test.completeTests(l_89, 20);
         endTime = System.currentTimeMillis();
         System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
 //        System.out.println("L89 = " + Arrays.toString(l_89) + "\n");
@@ -276,7 +276,7 @@ public class PseudoRandomGenerator {
         System.out.println("--------Jeffe");
         long[] jeffe = new long[count];
         jeffe = jeffeGenerator(jeffe);
-        Test.completeTests(jeffe, 5);
+        Test.completeTests(jeffe, 20);
         endTime = System.currentTimeMillis();
         System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
 //        System.out.println("Jeffe = " + Arrays.toString(jeffe) + "\n");
@@ -285,7 +285,7 @@ public class PseudoRandomGenerator {
         System.out.println("--------Wolfram");
         long[] wolfram = new long[count];
         wolfram = wolframGenerator(wolfram);
-        Test.completeTests(wolfram, 5);
+        Test.completeTests(wolfram, 20);
         endTime = System.currentTimeMillis();
         System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
 //        System.out.println("Wolfram = " + Arrays.toString(wolfram) + "\n");
@@ -294,34 +294,34 @@ public class PseudoRandomGenerator {
         System.out.println("--------Librarian");
         long[] lib = new long[count];
         lib = librarianGenerator(lib, text);
-        Test.completeTests(lib, 5);
+        Test.completeTests(lib, 20);
         endTime = System.currentTimeMillis();
         System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
 //        System.out.println("Librarian = " + Arrays.toString(lib) + "\n");
 
-        startTime = System.currentTimeMillis();
-        System.out.println("--------Blum-Micali");
-        long[] bM = new long[count];
-        bM = bMGenerator(bM);
-        Test.completeTests(bM, 5);
-        endTime = System.currentTimeMillis();
-        System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
-//        System.out.println("Blum-Micali = " + Arrays.toString(bM) + "\n");
-
-        startTime = System.currentTimeMillis();
-        System.out.println("--------Blum-Micali-Byte");
-        long[] bMByte = new long[count];
-        bMByte = bMByteGenerator(bMByte);
-        Test.completeTests(bMByte, 5);
-        endTime = System.currentTimeMillis();
-        System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
-//        System.out.println("Blum-Micali-Byte = " + Arrays.toString(bMByte) + "\n");
+//        startTime = System.currentTimeMillis();
+//        System.out.println("--------Blum-Micali");
+//        long[] bM = new long[count];
+//        bM = bMGenerator(bM);
+//        Test.completeTests(bM, 20);
+//        endTime = System.currentTimeMillis();
+//        System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
+////        System.out.println("Blum-Micali = " + Arrays.toString(bM) + "\n");
+//
+//        startTime = System.currentTimeMillis();
+//        System.out.println("--------Blum-Micali-Byte");
+//        long[] bMByte = new long[count];
+//        bMByte = bMByteGenerator(bMByte);
+//        Test.completeTests(bMByte, 20);
+//        endTime = System.currentTimeMillis();
+//        System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
+////        System.out.println("Blum-Micali-Byte = " + Arrays.toString(bMByte) + "\n");
 
         startTime = System.currentTimeMillis();
         System.out.println("--------Blum-Blum-Shyb");
         long[] bBS = new long[count];
         bBS = bBSGenerator(bBS);
-        Test.completeTests(bBS, 5);
+        Test.completeTests(bBS, 20);
         endTime = System.currentTimeMillis();
         System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
 //        System.out.println("Blum-Blum-Shyb = " + Arrays.toString(bBS) + "\n");
@@ -330,7 +330,7 @@ public class PseudoRandomGenerator {
         System.out.println("--------Blum-Blum-Shyb-Byte");
         long[] bBSByte = new long[count];
         bBSByte = bBSByteGenerator(bBSByte);
-        Test.completeTests(bBSByte, 5);
+        Test.completeTests(bBSByte, 20);
         endTime = System.currentTimeMillis();
         System.out.println("time = " + (endTime - startTime) + " milliseconds\n");
 //        System.out.println("Blum-Blum-Shyb-Byte = " + Arrays.toString(bBSByte) + "\n");

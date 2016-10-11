@@ -26,21 +26,17 @@ class Test {
             double v = (double) map.get(l);
             x += (v - n)*(v - n) / n;
         }
-//        System.out.println("    Test 1\n    practice X: " + x + "; border X: " + getXBoundary(255, z));
+        System.out.println("    Test 1\n    practice X: " + x + "; border X: " + getXBoundary(255, z));
         return x <= getXBoundary(255, z);
     }
 
     private static boolean elementIndependenceTest(long[] statistics, double z) {
-        Map<Long[], Integer> pairMap = new HashMap<>();
+        long[][] pairArray = new long[256][256];
         Map<Long, Integer> firstElementMap = new HashMap<>();
         Map<Long, Integer> secondElementMap = new HashMap<>();
         for (int i = 0; i < statistics.length / 2; i++) {
-            Long[] element = {statistics[i * 2], statistics[i * 2 + 1]};
-            if (pairMap.containsKey(element)) {
-                pairMap.put(element, pairMap.get(element) + 1);
-            } else {
-                pairMap.put(element, 1);
-            }
+            pairArray[(int)statistics[i * 2]][(int)statistics[i * 2 + 1]] += 1;
+
             if (firstElementMap.containsKey(statistics[i * 2])) {
                 firstElementMap.put(statistics[i * 2], firstElementMap.get(statistics[i * 2]) + 1);
             } else {
@@ -52,16 +48,23 @@ class Test {
                 secondElementMap.put(statistics[i * 2 + 1], 1);
             }
         }
+
         int n = statistics.length / 2;
         double x = 0;
-        for (Long[] pair : pairMap.keySet()) {
-            int vIQuantity = firstElementMap.get(pair[0]);
-            int vJQuantity = secondElementMap.get(pair[1]);
-            int vPairQuantity = pairMap.get(pair);
-            x += Math.pow(vPairQuantity, 2) / (vIQuantity * vJQuantity);
+        for (int i = 0; i < 255; i++) {
+            for (int j = 0; j < 255; j++) {
+                if (pairArray[i][j] > 0) {
+                    int vIQuantity = firstElementMap.get((long) i);
+                    int vJQuantity = secondElementMap.get((long) j);
+                    int vPairQuantity = (int) pairArray[i][j];
+                    x += Math.pow(vPairQuantity, 2) / (vIQuantity * vJQuantity);
+                } else {
+                    continue;
+                }
+            }
         }
         x = n * (x - 1);
-//        System.out.println("    Test 2\n    practice X: " + x + "; border X: " + getXBoundary(255 * 255, z));
+        System.out.println("    Test 2\n    practice X: " + x + "; border X: " + getXBoundary(255 * 255, z));
         return x <= getXBoundary(255 * 255, z);
     }
 
@@ -101,7 +104,7 @@ class Test {
             }
         }
         x = n * (x - 1);
-//        System.out.println("    Test 3\n    practice X: " + x + "; border X: " + getXBoundary(255 * (r - 1), z));
+        System.out.println("    Test 3\n    practice X: " + x + "; border X: " + getXBoundary(255 * (r - 1), z));
         return x <= getXBoundary(255 * (r - 1), z);
     }
 
