@@ -58,8 +58,6 @@ class Test {
                     int vJQuantity = secondElementMap.get((long) j);
                     int vPairQuantity = (int) pairArray[i][j];
                     x += Math.pow(vPairQuantity, 2) / (vIQuantity * vJQuantity);
-                } else {
-                    continue;
                 }
             }
         }
